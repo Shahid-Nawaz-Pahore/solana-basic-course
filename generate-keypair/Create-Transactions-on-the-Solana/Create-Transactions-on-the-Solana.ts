@@ -72,5 +72,7 @@ const signature = await sendAndConfirmTransaction(connection, transaction, [
   senderKeypair,
 ]);
 
-console.log(`💸 Sent ${LAMPORTS_TO_SEND} lamports to ${toPubkey}.`);
+console.log(
+  `💸 Sent ${LAMPORTS_TO_SEND} lamports from ${senderKeypair.publicKey} to ${toPubkey}.`
+);
 console.log(`Transaction signature: ${signature}`);
