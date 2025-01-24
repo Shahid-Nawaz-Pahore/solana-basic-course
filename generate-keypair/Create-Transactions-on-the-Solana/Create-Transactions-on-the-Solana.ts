@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import {
   Connection,
   Transaction,
@@ -14,7 +15,7 @@ import { getKeypairFromEnvironment } from "@solana-developers/helpers";
 const suppliedToPubkey = process.argv[2] || null;
 
 if (!suppliedToPubkey) {
-  console.log(`Please provide a public key to send to`);
+  console.log(chalk.red.bold("❌ Please provide a public key to send to!"));
   process.exit(1);
 }
 
@@ -28,15 +29,17 @@ const toPubkey = new PublicKey(suppliedToPubkey);
 const receiverAccountInfo = await connection.getAccountInfo(toPubkey);
 if (receiverAccountInfo === null) {
   console.log(
-    "Receiver account is not initialized. Initializing by sending SOL..."
+    chalk.yellow.bold(
+      "⚠️ Receiver account is not initialized. Initializing by sending SOL..."
+    )
   );
 
-  // Send a small amount (like 2 SOL) to initialize the receiver account
+  // Send 1 SOL (1,000,000,000 lamports) to initialize the receiver account
   const transaction = new Transaction();
   const sendSolInstruction = SystemProgram.transfer({
     fromPubkey: senderKeypair.publicKey,
     toPubkey,
-    lamports: 1 * LAMPORTS_PER_SOL, // Send 2 SOL to ensure the account is rent-exempt
+    lamports: 1 * LAMPORTS_PER_SOL, // Send 1 SOL to ensure the account is rent-exempt
   });
 
   transaction.add(sendSolInstruction);
@@ -45,19 +48,23 @@ if (receiverAccountInfo === null) {
     senderKeypair,
   ]);
   console.log(
-    `Receiver account initialized with 2 SOL. Transaction signature: ${signature}`
+    chalk.green.bold(
+      `✅ Receiver account initialized with 1 SOL. Transaction signature: ${signature}`
+    )
   );
 } else {
   console.log(
-    `Receiver account already initialized with ${
-      receiverAccountInfo.lamports / LAMPORTS_PER_SOL
-    } SOL`
+    chalk.green.bold(
+      `✅ Receiver account already initialized with ${
+        receiverAccountInfo.lamports / LAMPORTS_PER_SOL
+      } SOL`
+    )
   );
 }
 
 // Now you can send the desired amount of SOL to the receiver
 const transaction = new Transaction();
-const LAMPORTS_TO_SEND = 5000; // Amount to send (5,000 lamports = 0.000005 SOL)
+const LAMPORTS_TO_SEND = 50000000; // 1 SOL = 1 billion lamports
 
 const sendSolInstruction = SystemProgram.transfer({
   fromPubkey: senderKeypair.publicKey,
@@ -73,6 +80,16 @@ const signature = await sendAndConfirmTransaction(connection, transaction, [
 ]);
 
 console.log(
-  `💸 Sent ${LAMPORTS_TO_SEND} lamports from ${senderKeypair.publicKey} to ${toPubkey}.`
+  chalk.blueBright.bold(`
+  💎✨ **TRANSACTION COMPLETED** ✨💎
+  
+  💸 **Sent ${LAMPORTS_TO_SEND} lamports (1 SOL = 1 billion lamports)**
+  from my wallet **${chalk.green(senderKeypair.publicKey)}** 
+  to Trump Meme Coin **${chalk.green(toPubkey)}**.
+  
+  🚀 **Transaction Signature**: 
+     🎯 **${signature}**
+  
+  🎉
+  `)
 );
-console.log(`Transaction signature: ${signature}`);

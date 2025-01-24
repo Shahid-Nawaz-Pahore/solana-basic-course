@@ -1,6 +1,5 @@
-// import "dotenv/config";
 import dotenv from "dotenv";
-dotenv.config({ path: "./.env" });
+dotenv.config({ path: "../.env" });
 
 import { getKeypairFromEnvironment } from "@solana-developers/helpers";
 
